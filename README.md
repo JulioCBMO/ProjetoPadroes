@@ -3,7 +3,7 @@ Sistema de Submissão e Avaliação de Artigos Científicos
 
 RF01 – Command: o start() reseta o estado do sistema. Encapsular isso como um objeto Command permite desfazer, logar e reutilizar a operação facilmente.
 
-RF02 – Factory Method: você tem três tipos de usuário (Autor, Revisor, Chair) com comportamentos distintos. O Factory decide qual instanciar sem acoplar o código cliente.
+RF02 – Factory Method: tipos de usuário (Autor, Revisor, Chair) com comportamentos distintos. O Factory decide qual instanciar sem acoplar o código cliente.
 
 RF03 – Strategy: o algoritmo de compatibilidade (artigo × revisor) pode variar — por palavras-chave exatas, por pontuação ponderada, etc. Encapsula isso como uma CompatibilidadeStrategy trocável.
 
