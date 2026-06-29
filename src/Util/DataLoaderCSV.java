@@ -45,12 +45,12 @@ public class DataLoaderCSV {
                     String senha = colunas[2].trim();
                     String instituicao = colunas[3].trim();
 
-                    // MÁGICA AQUI: O CSV não dá o 'new'. Ele pede para o Registry fabricar!
+                    // O CSV não dá o 'new'. Ele pede para o Registry fabricar!
                     Usuario u = UsuarioFactoryRegistry.criar(tipo, email, senha, instituicao);
                     usuariosCarregados.add(u);
                 }
             }
-            // Único print tolerado, pois é um feedback de carga do sistema para o console E1
+            
             System.out.println("[Sistema] " + usuariosCarregados.size() + " usuários carregados com sucesso do CSV.");
 
         } catch (IOException e) {
