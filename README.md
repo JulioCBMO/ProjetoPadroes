@@ -35,15 +35,18 @@ O sistema foi construído em **Java puro**, sem dependências externas complexas
 
 ## 🧩 Mapeamento de Padrões de Projeto Aplicados
 
-A tabela abaixo serve como guia arquitetural, demonstrando onde cada Padrão de Projeto foi aplicado para solucionar os Requisitos Funcionais (RFs) exigidos.
+A tabela abaixo serve como guia arquitetural, demonstrando onde cada Padrão de Projeto foi (ou será) aplicado para solucionar os Requisitos Funcionais (RFs) exigidos no planejamento do sistema.
 
-| Padrão de Projeto | Requisito Alvo | Classes Principais | Objetivo da Aplicação |
-| :--- | :--- | :--- | :--- |
-| **Factory Method** | **RF02** (Cadastro) | `UsuarioFactoryRegistry`, `PesquisadorFactory`, `ChairFactory` | Centralizar a criação de usuários, eliminando `if/else` ao ler o CSV e permitindo plugar novos tipos de usuários facilmente (OCP). |
-| **Strategy** | **RF03, RF06** (Distribuição) | `CompatibilidadeStrategy`, `DistribuidorDeArtigos`, `CompatibilidadePonderada` | Encapsular o algoritmo de compatibilidade temática (blind-review e cotas de balanceamento) permitindo trocar as regras no futuro sem alterar o motor de distribuição. |
-| **State** | **RF05, RF07** (Ciclo do Artigo) | `Artigo`, `EstadoArtigo`, `EstadoSubmetido`, `EstadoAceito` | Controlar rigidamente o fluxo do artigo (Submetido -> Em Revisão -> Aceito/Rejeitado), impedindo ações ilegais (ex: avaliar um artigo já finalizado). |
-| **Observer** | **RF06, RF09** (Notificações) | `ArtigoObserver`, `NotificadorEmail`, `LogAuditoria` | Desacoplar a classe `Artigo` da lógica de envio de alertas. Quando o artigo muda de estado, ele notifica automaticamente os "assinantes" para disparar e-mails e logs. |
-| **Template Method** | **RF07** (Pareceres) | `RelatorioRevisaoTemplate`, `RelatorioSimples`, `RelatorioDetalhado` | Criar um esqueleto fixo (cabeçalho, corpo, rodapé) para a impressão dos relatórios de avaliação, delegando apenas o "recheio" do texto para as subclasses. |
+| Padrão de Projeto | Requisito Alvo | Objetivo da Aplicação |
+| :--- | :--- | :--- |
+| **Command** | **RF01** (Inicialização) | Encapsular o método `start()` que reseta o estado do sistema como um objeto Command, permitindo desfazer, logar e reutilizar a operação facilmente. |
+| **Factory Method** | **RF02** (Cadastro) | Instanciar tipos de usuário (Autor, Revisor, Chair) com comportamentos distintos sem acoplar o código cliente, decidindo dinamicamente a criação via Registry. |
+| **Strategy** | **RF03** (Distribuição) | Encapsular o algoritmo de compatibilidade (artigo × revisor) como uma interface `CompatibilidadeStrategy` trocável (ex: palavras-chave exatas, pontuação ponderada). |
+| **State** | **RF04, RF05** (Ciclos) | Controlar os ciclos de estado do convite e do artigo (`Submetido -> Revisão -> Aceito/Rejeitado`), eliminando estruturas condicionais (`ifs`) espalhadas pelo código. |
+| **Observer** | **RF06** (Notificações) | Fazer o revisor atuar como um Observer que reage ao evento de distribuição, sendo notificado por e-mail automaticamente quando um artigo é alocado a ele. |
+| **Template Method** | **RF07, RF09** (Pareceres e E-mails) | **(RF07)** Definir o esqueleto estrutural fixo do parecer (contribuições + críticas + veredito), deixando as subclasses preencherem a seção. **(RF09)** Reutilizar a mesma lógica para os e-mails de aceite/rejeição, que possuem estrutura idêntica mas campos variáveis. |
+| **Facade** | **RF08** (Dashboard) | Prover uma `DashboardFacade` que oferece uma interface simples para agregar dados de submissões, revisores e prazos, escondendo a complexidade de consultar múltiplos subsistemas. |
+| **Decorator** | **RF10** (Selos/Tags) | Adicionar "selos de qualidade" dinâmicos ao artigo (ex: `ArtigoComRevisaoRapida`, `ArtigoDestaque`) sem a necessidade de alterar a classe base. |
 
 ---
 
