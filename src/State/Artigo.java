@@ -3,6 +3,7 @@ package State;
 import FactoryMethod.Pesquisador;
 import java.util.ArrayList;
 import java.util.List;
+import Observer.ArtigoObserver;
 
 /**
  * Classe de Contexto do padrão State.
@@ -17,7 +18,9 @@ public class Artigo {
     private final Pesquisador autorPrincipal;
     private final List<Pesquisador> coautores = new ArrayList<>();
     private final List<String> pareceres = new ArrayList<>();
-    
+    private final List<ArtigoObserver> observers = new ArrayList<>();
+
+
     // Referência ao estado atual do ciclo de vida
     private EstadoArtigo estadoAtual;
 
@@ -39,6 +42,7 @@ public class Artigo {
     /** Altera o estado atual (Usado internamente pelas classes de Estado Concreto). */
     protected void setEstado(EstadoArtigo novoEstado) {
         this.estadoAtual = novoEstado;
+        notificarObservers();
     }
 
     public String getStatus() {
@@ -69,4 +73,21 @@ public class Artigo {
     public Pesquisador getAutorPrincipal() { return autorPrincipal; }
     public List<Pesquisador> getCoautores() { return coautores; }
     public List<String> getPareceres() { return pareceres; }
+
+
+    // --- Métodos do Padrão Observer ---
+
+    public void anexarObserver(ArtigoObserver observer) {
+        this.observers.add(observer);
+}
+
+    public void removerObserver(ArtigoObserver observer) {
+        this.observers.remove(observer);
+}
+
+    private void notificarObservers() {
+        for (ArtigoObserver obs : observers) {
+            obs.onEstadoAlterado(this);
+    }
+}
 }
