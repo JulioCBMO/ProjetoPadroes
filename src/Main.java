@@ -1,12 +1,22 @@
+import Command.Command;
+import Command.PainelControle;
+import Command.SistemaEvento;
+import Command.StartCommand;
+
 import FactoryMethod.Chair;
 import FactoryMethod.Pesquisador;
 import FactoryMethod.Usuario;
+
 import State.Artigo;
+
 import Strategy.CompatibilidadePonderada;
 import Strategy.DistribuidorDeArtigos;
+
 import Util.DataLoaderCSV;
+
 import Observer.NotificadorEmail;
 import Observer.LogAuditoria;
+
 import TemplateMethod.RelatorioRevisaoTemplate;
 import TemplateMethod.RelatorioDetalhado;
 import TemplateMethod.RelatorioSimples;
@@ -17,17 +27,32 @@ import java.util.Map;
 
 /**
  * Orquestrador Principal do Sistema.
- * Integra e executa de forma harmoniosa os padrões Factory Method, 
+ * Integra e executa de forma harmoniosa os padrões Command, Factory Method, 
  * Strategy, State, Observer e Template Method.
  */
 public class Main {
     public static void main(String[] args) {
         
         System.out.println("==================================================");
-        System.out.println("=== INICIALIZANDO O SISTEMA (E1 - CARGA CSV) ===");
+        System.out.println("=== REQUISITO RF01 - INICIALIZAÇÃO (COMMAND) ===");
         System.out.println("==================================================");
         
-        // 1. Carga automática de dados via CSV com Factory Method integrado nos bastidores
+        // 1. Instancia o núcleo do sistema (Receiver)
+        SistemaEvento meuEvento = new SistemaEvento("Tech Simpósio 2026");
+        
+        // 2. Encapsula a ação de start em um Comando
+        Command startCmd = new StartCommand(meuEvento);
+        
+        // 3. Configura o botão do coordenador (Invoker) e dispara
+        PainelControle painelChair = new PainelControle();
+        painelChair.setCommand(startCmd);
+        painelChair.pressionarBotao();
+
+        System.out.println("\n==================================================");
+        System.out.println("=== INICIALIZANDO USUÁRIOS (E1 - CARGA CSV) ===");
+        System.out.println("==================================================");
+        
+        // Carga automática de dados via CSV com Factory Method integrado nos bastidores
         List<Usuario> bancoDeUsuarios = DataLoaderCSV.carregarUsuarios("usuarios.csv");
         
         Chair coordenador = null;
@@ -42,7 +67,7 @@ public class Main {
         }
 
         System.out.println("\n==================================================");
-        System.out.println("=== CONFIGURANDO O COMITÉ TÉCNICO (RF04) ===");
+        System.out.println("=== CONFIGURANDO O COMITÊ TÉCNICO (RF04) ===");
         System.out.println("==================================================");
         
         // Simulando a ativação de revisores e cadastro de especialidades
@@ -53,11 +78,11 @@ public class Main {
         revisor1.aceitarConviteRevisao();
         revisor1.adicionarEspecialidade("IA");
         revisor1.adicionarEspecialidade("Machine Learning");
-        System.out.println("[Comité] " + revisor1.getEmail() + " ativado como REVISOR.");
+        System.out.println("[Comitê] " + revisor1.getEmail() + " ativado como REVISOR.");
         
         revisor2.aceitarConviteRevisao();
         revisor2.adicionarEspecialidade("Engenharia de Software");
-        System.out.println("[Comité] " + revisor2.getEmail() + " ativado como REVISOR.");
+        System.out.println("[Comitê] " + revisor2.getEmail() + " ativado como REVISOR.");
 
         System.out.println("\n==================================================");
         System.out.println("=== SUBMISSÃO DO ARTIGO (STATE & OBSERVER) ===");
@@ -76,7 +101,7 @@ public class Main {
         System.out.println("=== DISTRIBUIÇÃO DOS ARTIGOS (STRATEGY) ===");
         System.out.println("==================================================");
         
-        // Filtra o comité ativo para passar ao motor de distribuição do Strategy
+        // Filtra o comitê ativo para passar ao motor de distribuição do Strategy
         List<Pesquisador> comiteAtivo = new ArrayList<>();
         for (Pesquisador p : pesquisadores) {
             if (p.isRevisor()) {
