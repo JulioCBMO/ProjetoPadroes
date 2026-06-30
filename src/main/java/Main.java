@@ -54,13 +54,10 @@ public class Main {
         // Carga automática de dados via CSV com Factory Method integrado nos bastidores
         List<Usuario> bancoDeUsuarios = DataLoaderCSV.carregarUsuarios("usuarios.csv");
         
-        Chair coordenador = null;
         List<Pesquisador> pesquisadores = new ArrayList<>();
         
         for (Usuario u : bancoDeUsuarios) {
-            if (u instanceof Chair) {
-                coordenador = (Chair) u;
-            } else if (u instanceof Pesquisador) {
+            if (!(u instanceof Chair)) {
                 pesquisadores.add((Pesquisador) u);
             }
         }
@@ -130,7 +127,7 @@ public class Main {
         
         // Executa a estratégia ponderada com o nosso algoritmo de balanceamento de cotas
         DistribuidorDeArtigos distribuidor = new DistribuidorDeArtigos(new CompatibilidadePonderada());
-        Map<Pesquisador, List<Artigo>> mapaDistribuicao = distribuidor.distribuir(listaArtigos, comiteAtivo);
+        distribuidor.distribuir(listaArtigos, comiteAtivo);
         
         System.out.println("[Distribuição] Alocação finalizada com sucesso pelo algoritmo.");
 

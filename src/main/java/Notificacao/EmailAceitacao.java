@@ -17,7 +17,6 @@ public class EmailAceitacao extends EmailNotificacao {
 
     @Override
     protected String montarCorpo() {
-        ArtigoExibivel exibicao = FabricaExibicao.montarExibicao(artigo);
         return String.format("""
             Prezado(a) Sr(a). %s:
 

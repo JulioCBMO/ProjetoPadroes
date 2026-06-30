@@ -1,7 +1,13 @@
 package main.java.Notificacao;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
 import java.util.Properties;
 
 public class EmailService {
