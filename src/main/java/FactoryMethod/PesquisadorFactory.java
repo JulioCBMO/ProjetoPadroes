@@ -1,4 +1,4 @@
-package main.java.FactoryMethod;
+package FactoryMethod;
 
 /**
  * Fábrica Concreta (Factory Method) para criar Pesquisadores.

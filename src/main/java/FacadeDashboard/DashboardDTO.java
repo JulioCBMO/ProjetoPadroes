@@ -1,4 +1,4 @@
-package main.java.FacadeDashboard;
+package FacadeDashboard;
 
 import java.util.List;
 

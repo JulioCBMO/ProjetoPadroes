@@ -1,4 +1,4 @@
-package main.java.Decorator;
+package Decorator;
 
 public abstract class SeloDecorator implements ArtigoExibivel {
 

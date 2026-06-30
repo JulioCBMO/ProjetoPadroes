@@ -1,7 +1,7 @@
-package main.java.FacadeDashboard;
+package FacadeDashboard;
 
-import main.java.FactoryMethod.Pesquisador;
-import main.java.StateArtigo.Artigo;
+import FactoryMethod.Pesquisador;
+import StateArtigo.Artigo;
 import java.util.*;
 
 /**

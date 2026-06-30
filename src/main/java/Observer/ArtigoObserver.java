@@ -1,6 +1,6 @@
-package main.java.Observer;
+package Observer;
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 
 //  Define o contrato para quem deseja escutar as mudanças de estado do Artigo.

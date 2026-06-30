@@ -1,6 +1,6 @@
-package main.java.TemplateMethod;
+package TemplateMethod;
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 /**
  * Implementação concreta do Template Method.

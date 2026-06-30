@@ -1,4 +1,4 @@
-package main.java.FactoryMethod;
+package FactoryMethod;
 
 public class ChairFactory implements UsuarioFactory {
     @Override

@@ -1,28 +1,26 @@
-package main.java;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import main.java.Command.Command;
-import main.java.Command.PainelControle;
-import main.java.Command.SistemaEvento;
-import main.java.Command.StartCommand;
-import main.java.FacadeDashboard.DashboardFacade;
-import main.java.FactoryMethod.Chair;
-import main.java.FactoryMethod.Pesquisador;
-import main.java.FactoryMethod.Usuario;
-import main.java.Notificacao.EmailService;
-import main.java.Observer.LogAuditoria;
-import main.java.Observer.NotificadorEmail;
-import main.java.StateArtigo.Artigo;
-import main.java.StateConvite.ComiteTecnico;
-import main.java.StateConvite.Convite;
-import main.java.Strategy.CompatibilidadePonderada;
-import main.java.Strategy.DistribuidorDeArtigos;
-import main.java.TemplateMethod.RelatorioDetalhado;
-import main.java.TemplateMethod.RelatorioRevisaoTemplate;
-import main.java.TemplateMethod.RelatorioSimples;
-import main.java.Util.DataLoaderCSV;
+import Command.Command;
+import Command.PainelControle;
+import Command.SistemaEvento;
+import Command.StartCommand;
+import FacadeDashboard.DashboardFacade;
+import FactoryMethod.Chair;
+import FactoryMethod.Pesquisador;
+import FactoryMethod.Usuario;
+import Notificacao.EmailService;
+import Observer.LogAuditoria;
+import Observer.NotificadorEmail;
+import StateArtigo.Artigo;
+import StateConvite.ComiteTecnico;
+import StateConvite.Convite;
+import Strategy.CompatibilidadePonderada;
+import Strategy.DistribuidorDeArtigos;
+import TemplateMethod.RelatorioDetalhado;
+import TemplateMethod.RelatorioRevisaoTemplate;
+import TemplateMethod.RelatorioSimples;
+import Util.DataLoaderCSV;
 
 /**
  * Orquestrador Principal do Sistema.

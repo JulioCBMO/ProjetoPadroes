@@ -1,4 +1,4 @@
-package main.java.StateArtigo;
+package StateArtigo;
 
 /**
  * Interface base para o padrão State (RF05, RF06, RF07).

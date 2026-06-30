@@ -1,7 +1,7 @@
-package main.java.Strategy;
+package Strategy;
 
-import main.java.FactoryMethod.Pesquisador;
-import main.java.StateArtigo.Artigo;
+import FactoryMethod.Pesquisador;
+import StateArtigo.Artigo;
 
 public class CompatibilidadeExata implements CompatibilidadeStrategy {
 

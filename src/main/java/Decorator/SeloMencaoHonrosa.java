@@ -1,4 +1,4 @@
-package main.java.Decorator;
+package Decorator;
 
 public class SeloMencaoHonrosa extends SeloDecorator {
 

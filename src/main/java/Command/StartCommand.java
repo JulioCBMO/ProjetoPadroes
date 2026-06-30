@@ -1,4 +1,4 @@
-package main.java.Command;
+package Command;
 
 /**
  * Comando concreto para inicializar o sistema (RF01).

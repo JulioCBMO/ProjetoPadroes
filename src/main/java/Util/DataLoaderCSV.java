@@ -1,7 +1,7 @@
-package main.java.Util;
+package Util;
 
-import main.java.FactoryMethod.Usuario;
-import main.java.FactoryMethod.UsuarioFactoryRegistry;
+import FactoryMethod.Usuario;
+import FactoryMethod.UsuarioFactoryRegistry;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;

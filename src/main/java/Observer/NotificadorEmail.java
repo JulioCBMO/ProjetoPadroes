@@ -1,9 +1,9 @@
-package main.java.Observer;
+package Observer;
 
-import main.java.Notificacao.EmailAceitacao;
-import main.java.Notificacao.EmailRejeicao;
-import main.java.Notificacao.EmailService;
-import main.java.StateArtigo.Artigo;
+import Notificacao.EmailAceitacao;
+import Notificacao.EmailRejeicao;
+import Notificacao.EmailService;
+import StateArtigo.Artigo;
 /**
  * Observer concreto responsável por disparar notificações reais por e-mail (RF09).
  */

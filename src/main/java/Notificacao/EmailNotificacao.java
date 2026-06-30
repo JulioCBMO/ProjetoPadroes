@@ -1,6 +1,6 @@
-package main.java.Notificacao;
+package Notificacao;
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 /**
  * Padrão Template Method aplicado ao envio de notificações por e-mail (RF09).

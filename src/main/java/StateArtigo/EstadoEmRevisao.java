@@ -1,4 +1,4 @@
-package main.java.StateArtigo;
+package StateArtigo;
 
 /**
  * Estado ativo de avaliação (RF06).

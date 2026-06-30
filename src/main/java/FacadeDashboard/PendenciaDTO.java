@@ -1,3 +1,3 @@
-package main.java.FacadeDashboard;
+package FacadeDashboard;
 
 public record PendenciaDTO(String artigoTitulo, String revisorEmail) {}

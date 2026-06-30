@@ -1,12 +1,12 @@
-package main.java.StateArtigo;
+package StateArtigo;
 
-import main.java.FactoryMethod.Pesquisador;
+import FactoryMethod.Pesquisador;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import main.java.Observer.ArtigoObserver;
+import Observer.ArtigoObserver;
 
 /**
  * Classe de Contexto do padrão State.

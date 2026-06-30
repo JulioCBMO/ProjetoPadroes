@@ -1,4 +1,4 @@
-package main.java.Command;
+package Command;
 
 /**
  * Receiver do padrão Command (RF01).

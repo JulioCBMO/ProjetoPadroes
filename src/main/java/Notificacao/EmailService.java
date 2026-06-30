@@ -1,4 +1,4 @@
-package main.java.Notificacao;
+package Notificacao;
 
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;

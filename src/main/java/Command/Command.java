@@ -1,4 +1,4 @@
-package main.java.Command;
+package Command;
 
 /**
  * Interface base do padrão Command.

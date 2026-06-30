@@ -1,9 +1,9 @@
-package main.java.FactoryMethod;
+package FactoryMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 /**
  * Representa o usuário comum do sistema (Pesquisador).

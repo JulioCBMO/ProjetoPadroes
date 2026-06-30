@@ -1,8 +1,6 @@
-package main.java.Notificacao;
+package Notificacao;
 
-import main.java.Decorator.ArtigoExibivel;
-import main.java.Decorator.FabricaExibicao;
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 public class EmailAceitacao extends EmailNotificacao {
 

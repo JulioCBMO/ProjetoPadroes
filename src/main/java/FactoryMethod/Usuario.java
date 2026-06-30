@@ -1,4 +1,4 @@
-package main.java.FactoryMethod;
+package FactoryMethod;
 
 public abstract class Usuario {
     protected String email;

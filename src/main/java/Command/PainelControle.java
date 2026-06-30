@@ -1,4 +1,4 @@
-package main.java.Command;
+package Command;
 
 /**
  * Invoker do padrão Command.

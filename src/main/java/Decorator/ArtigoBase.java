@@ -1,8 +1,8 @@
-package main.java.Decorator;
+package Decorator;
 
 
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 public class ArtigoBase implements ArtigoExibivel {
 

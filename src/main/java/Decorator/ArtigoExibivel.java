@@ -1,4 +1,4 @@
-package main.java.Decorator;
+package Decorator;
 
 public interface ArtigoExibivel {
     String exibir();

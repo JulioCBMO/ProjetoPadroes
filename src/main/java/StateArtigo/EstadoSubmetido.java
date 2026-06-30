@@ -1,4 +1,4 @@
-package main.java.StateArtigo;
+package StateArtigo;
 
 /**
  * Estado inicial do artigo (RF05).

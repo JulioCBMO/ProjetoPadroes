@@ -1,6 +1,6 @@
-package main.java.Observer;
+package Observer;
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 /**
  * Observer concreto que registra logs de auditoria no sistema.

@@ -1,4 +1,4 @@
-package main.java.FactoryMethod;
+package FactoryMethod;
 
 public class Chair extends Usuario {
 

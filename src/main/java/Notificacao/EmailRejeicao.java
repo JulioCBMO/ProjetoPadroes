@@ -1,6 +1,6 @@
-package main.java.Notificacao;
+package Notificacao;
 
-import main.java.StateArtigo.Artigo;
+import StateArtigo.Artigo;
 
 public class EmailRejeicao extends EmailNotificacao {
 

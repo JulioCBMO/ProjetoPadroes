@@ -1,4 +1,4 @@
-package main.java.StateArtigo;
+package StateArtigo;
 
 /**
  * Estado terminal de recusa (RF09).

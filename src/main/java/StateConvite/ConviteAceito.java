@@ -1,4 +1,4 @@
-package main.java.StateConvite;
+package StateConvite;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package main.java.StateConvite;
+package StateConvite;
 
-import main.java.FactoryMethod.Pesquisador;
+import FactoryMethod.Pesquisador;
 import java.util.List;
 
 public class Convite {
