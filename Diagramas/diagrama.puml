@@ -1,0 +1,301 @@
+@startuml
+title Diagrama de Classes - Paper Submission Management System
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+hide empty members
+
+skinparam defaultFontSize 10
+skinparam classFontSize 12
+skinparam noteFontSize 10
+
+' =====================================================
+' PADRÃO COMMAND (RF01)
+' =====================================================
+package "Command (RF01)" {
+  interface Command {
+    + executar(): void
+  }
+  
+  class StartCommand {
+    - sistema: SistemaEvento
+    + executar(): void
+  }
+  
+  class SistemaEvento {
+    - nomeEvento: String
+    - abertoParaSubmissoes: boolean
+    + start(): void
+    + isAberto(): boolean
+  }
+  
+  class PainelControle {
+    - slot: Command
+    + setCommand(command: Command): void
+    + pressionarBotao(): void
+  }
+}
+
+Command <|.. StartCommand
+StartCommand --> SistemaEvento : "receiver"
+PainelControle o-- Command : "invoca"
+
+note right of Command
+  **Padrão Command**
+  Desacopla o botão da UI (PainelControle) 
+  da lógica de reset do sistema (SistemaEvento).
+end note
+
+' =====================================================
+' PADRÃO FACTORY METHOD (RF02)
+' =====================================================
+package "FactoryMethod (RF02)" {
+  abstract class Usuario {
+    # email: String
+    # senha: String
+    # instituicao: String
+    + getTipo(): String
+  }
+  
+  class Pesquisador {
+    - isRevisor: boolean
+    + aceitarConviteRevisao()
+    + submeterArtigo()
+  }
+  
+  class Chair {
+  }
+  
+  interface UsuarioFactory {
+    + criar(email, senha, inst): Usuario
+  }
+  
+  class PesquisadorFactory {
+    + criar(): Usuario
+  }
+  
+  class ChairFactory {
+    + criar(): Usuario
+  }
+  
+  class UsuarioFactoryRegistry {
+    - factories: Map<String, UsuarioFactory>
+    + criar(tipo, email, senha, inst): Usuario
+  }
+}
+
+Usuario <|-- Pesquisador
+Usuario <|-- Chair
+UsuarioFactory <|.. PesquisadorFactory
+UsuarioFactory <|.. ChairFactory
+UsuarioFactoryRegistry o-- UsuarioFactory : "usa"
+
+note right of UsuarioFactoryRegistry
+  **Padrão Factory Method**
+  Instancia os usuários a partir da leitura do CSV
+  sem usar if/else, aplicando o Open/Closed Principle.
+end note
+
+' =====================================================
+' PADRÃO STRATEGY (RF03, RF06)
+' =====================================================
+package "Strategy (Distribuicao)" {
+  interface CompatibilidadeStrategy {
+    + calcular(artigo: Artigo, revisor: Pesquisador): double
+  }
+  
+  class CompatibilidadeExata
+  class CompatibilidadePonderada
+  
+  class DistribuidorDeArtigos {
+    - strategy: CompatibilidadeStrategy
+    + distribuir(artigos, pesquisadores)
+  }
+}
+
+CompatibilidadeStrategy <|.. CompatibilidadeExata
+CompatibilidadeStrategy <|.. CompatibilidadePonderada
+DistribuidorDeArtigos o-- CompatibilidadeStrategy : "delega calculo"
+
+note bottom of DistribuidorDeArtigos
+  **Padrão Strategy**
+  O algoritmo de blind-review e balanceamento 
+  de cota pode variar livremente (Exata/Ponderada) 
+  sem mexer no Distribuidor principal.
+end note
+
+' =====================================================
+' PADRÃO STATE - CONVITE (RF04)
+' =====================================================
+package "StateConvite (RF04)" {
+  interface EstadoConvite {
+    + aceitar(convite, especialidades)
+    + recusar(convite)
+    + getDescricao()
+  }
+  
+  class ConvitePendente
+  class ConviteAceito
+  class ConviteRecusado
+  
+  class Convite {
+    - estado: EstadoConvite
+    - pesquisador: Pesquisador
+  }
+  
+  class ComiteTecnico {
+    - convites: List<Convite>
+    + convidar(pesquisador)
+  }
+}
+
+EstadoConvite <|.. ConvitePendente
+EstadoConvite <|.. ConviteAceito
+EstadoConvite <|.. ConviteRecusado
+Convite o-- EstadoConvite
+ComiteTecnico --> Convite
+
+' =====================================================
+' PADRÃO STATE - ARTIGO (RF05) E OBSERVER (RF06/09)
+' =====================================================
+package "StateArtigo (RF05) e Observer" {
+  interface EstadoArtigo {
+    + submeter(artigo)
+    + distribuir(artigo)
+    + concluirRevisao(artigo, aprovado)
+  }
+  
+  class EstadoSubmetido
+  class EstadoEmRevisao
+  class EstadoAceito
+  class EstadoRejeitado
+  
+  class Artigo {
+    - estadoAtual: EstadoArtigo
+    - observers: List<ArtigoObserver>
+    + setEstado()
+    + anexarObserver()
+  }
+  
+  interface ArtigoObserver {
+    + onEstadoAlterado(artigo: Artigo)
+  }
+  
+  class NotificadorEmail
+  class LogAuditoria
+}
+
+EstadoArtigo <|.. EstadoSubmetido
+EstadoArtigo <|.. EstadoEmRevisao
+EstadoArtigo <|.. EstadoAceito
+EstadoArtigo <|.. EstadoRejeitado
+Artigo o-- EstadoArtigo
+
+ArtigoObserver <|.. NotificadorEmail
+ArtigoObserver <|.. LogAuditoria
+Artigo o-- ArtigoObserver : "notifica"
+
+note right of Artigo
+  **Padrões State e Observer**
+  O State impede transições ilegais do Artigo.
+  Ao mudar de estado, o Artigo notifica os 
+  Observers (desacoplando o envio de email).
+end note
+
+' =====================================================
+' PADRÃO TEMPLATE METHOD (RF07, RF09)
+' =====================================================
+package "TemplateMethod e Notificacao" {
+  abstract class RelatorioRevisaoTemplate {
+    + gerarRelatorio(artigo)
+    # imprimirCorpo(artigo)
+  }
+  class RelatorioSimples
+  class RelatorioDetalhado
+  
+  abstract class EmailNotificacao {
+    + enviar()
+    # montarAssunto()
+    # montarCorpo()
+  }
+  class EmailAceitacao
+  class EmailRejeicao
+  class EmailService {
+    + enviar(dest, ass, corpo)
+  }
+}
+
+RelatorioRevisaoTemplate <|-- RelatorioSimples
+RelatorioRevisaoTemplate <|-- RelatorioDetalhado
+
+EmailNotificacao <|-- EmailAceitacao
+EmailNotificacao <|-- EmailRejeicao
+EmailNotificacao --> EmailService
+
+note right of RelatorioRevisaoTemplate
+  **Padrão Template Method**
+  Esqueleto fixo para Relatórios e Emails.
+  O "corpo" varia conforme a subclasse.
+end note
+
+' =====================================================
+' PADRÃO FACADE (RF08)
+' =====================================================
+package "FacadeDashboard (RF08)" {
+  class DashboardFacade {
+    + gerarResumo(): DashboardDTO
+  }
+  class DashboardDTO
+  class PendenciaDTO
+}
+
+DashboardFacade --> DashboardDTO
+DashboardDTO o-- PendenciaDTO
+
+note top of DashboardFacade
+  **Padrão Facade**
+  Simplifica a exibição de painéis,
+  cruzando listas e montando DTOs limpos.
+end note
+
+' =====================================================
+' PADRÃO DECORATOR (RF10)
+' =====================================================
+package "Decorator (RF10)" {
+  interface ArtigoExibivel {
+    + exibir(): String
+  }
+  
+  class ArtigoBase {
+    - artigo: Artigo
+  }
+  
+  abstract class SeloDecorator {
+    # artigoDecorado: ArtigoExibivel
+  }
+  
+  class SeloMelhorArtigo
+  class SeloMencaoHonrosa
+  
+  class FabricaExibicao {
+    + montarExibicao(artigo): ArtigoExibivel
+  }
+}
+
+ArtigoExibivel <|.. ArtigoBase
+ArtigoExibivel <|.. SeloDecorator
+SeloDecorator o-- ArtigoExibivel
+SeloDecorator <|-- SeloMelhorArtigo
+SeloDecorator <|-- SeloMencaoHonrosa
+FabricaExibicao --> ArtigoExibivel
+
+note right of SeloDecorator
+  **Padrão Decorator**
+  Permite acumular selos (tags) no 
+  artigo para exibição, sem alterar o 
+  código original da classe Artigo.
+end note
+
+@enduml
