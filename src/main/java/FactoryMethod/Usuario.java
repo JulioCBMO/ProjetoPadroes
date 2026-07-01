@@ -12,6 +12,7 @@ public abstract class Usuario {
     }
 
     public String getEmail() { return email; }
+    public String getInstituicao() {return instituicao; }
 
     // Cada tipo sobrescreve conforme sua responsabilidade
     public abstract String getTipo();

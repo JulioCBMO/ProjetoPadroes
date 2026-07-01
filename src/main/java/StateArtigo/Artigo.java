@@ -2,11 +2,14 @@ package StateArtigo;
 
 import FactoryMethod.Pesquisador;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import Observer.ArtigoObserver;
+import Util.Veredito;
 
 /**
  * Classe de Contexto do padrão State.
@@ -23,6 +26,8 @@ public class Artigo {
     private final List<String> pareceres = new ArrayList<>();
     private final List<ArtigoObserver> observers = new ArrayList<>();
     private final List<String> temas = new ArrayList<>();
+    private final List<Pesquisador> revisoresDesignados = new ArrayList<>();
+    private final Map<String, Veredito> vereditosPorRevisor = new HashMap<>();
 
 
     // Referência ao estado atual do ciclo de vida
@@ -107,5 +112,28 @@ public class Artigo {
         for (ArtigoObserver obs : observers) {
             obs.onEstadoAlterado(this);
     }
+    
+}
+    public void adicionarRevisorDesignado(Pesquisador revisor) {
+    if (!revisoresDesignados.contains(revisor)) {
+        revisoresDesignados.add(revisor);
+    }
+}
+
+    public List<Pesquisador> getRevisoresDesignados() {
+    return new ArrayList<>(revisoresDesignados);
+}
+
+    public void adicionarVeredito(String emailRevisor, Veredito veredito) {
+    vereditosPorRevisor.put(emailRevisor, veredito);
+}
+
+    public boolean todosRevisoresAvaliaram() {
+    return !revisoresDesignados.isEmpty() && 
+           vereditosPorRevisor.size() == revisoresDesignados.size();
+}
+
+    public Map<String, Veredito> getVereditos() {
+    return new HashMap<>(vereditosPorRevisor);
 }
 }

@@ -9,14 +9,17 @@ public class DashboardDTO {
     private final int artigosAvaliados;
     private final int artigosPendentes;
     private final List<PendenciaDTO> pendencias;
+    private final List<String> artigosAceitosComSelos;
 
     public DashboardDTO(int totalArtigos, int totalRevisores, int artigosAvaliados,
-                         int artigosPendentes, List<PendenciaDTO> pendencias) {
+                         int artigosPendentes, List<PendenciaDTO> pendencias,
+                         List<String> artigosAceitosComSelos) {
         this.totalArtigos = totalArtigos;
         this.totalRevisores = totalRevisores;
         this.artigosAvaliados = artigosAvaliados;
         this.artigosPendentes = artigosPendentes;
         this.pendencias = pendencias;
+        this.artigosAceitosComSelos = artigosAceitosComSelos;
     }
 
     public int getTotalArtigos() { return totalArtigos; }
@@ -24,6 +27,7 @@ public class DashboardDTO {
     public int getArtigosAvaliados() { return artigosAvaliados; }
     public int getArtigosPendentes() { return artigosPendentes; }
     public List<PendenciaDTO> getPendencias() { return pendencias; }
+    public List<String> getArtigosAceitosComSelos() { return artigosAceitosComSelos; }
 
     public void imprimir() {
         System.out.println("\n========== DASHBOARD DO EVENTO ==========");
@@ -31,6 +35,17 @@ public class DashboardDTO {
         System.out.println("Revisores ativos:     " + totalRevisores);
         System.out.println("Artigos avaliados:    " + artigosAvaliados);
         System.out.println("Artigos pendentes:    " + artigosPendentes);
+        System.out.println("------------------------------------------");
+
+        if (artigosAceitosComSelos != null && !artigosAceitosComSelos.isEmpty()) {
+            System.out.println("Artigos ACEITOS com selos:");
+            for (String linha : artigosAceitosComSelos) {
+                System.out.println("  " + linha);
+            }
+        } else {
+            System.out.println("Nenhum artigo aceito com selo ainda.");
+        }
+
         System.out.println("------------------------------------------");
         if (pendencias.isEmpty()) {
             System.out.println("Nenhuma pendência no momento.");

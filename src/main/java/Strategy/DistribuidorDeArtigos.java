@@ -23,6 +23,7 @@ public class DistribuidorDeArtigos {
             Pesquisador escolhido = escolherRevisor(artigo, todosPesquisadores);
 
             escolhido.adicionarArtigoParaRevisar(artigo);
+            artigo.adicionarRevisorDesignado(escolhido);
             artigo.distribuir(); // State: SUBMETIDO → EM_REVISAO
 
             distribuicao.computeIfAbsent(escolhido, k -> new ArrayList<>()).add(artigo);

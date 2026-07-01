@@ -1,14 +1,10 @@
 package FacadeDashboard;
 
+import Decorator.FabricaExibicao;
 import FactoryMethod.Pesquisador;
 import StateArtigo.Artigo;
 import java.util.*;
 
-/**
- * Padrão Facade aplicado ao dashboard (RF08).
- * Esconde a complexidade de cruzar dados de Artigo (State) e Pesquisador (FactoryMethod)
- * atrás de uma interface única e simples para o coordenador.
- */
 public class DashboardFacade {
 
     private final List<Artigo> todosArtigos;
@@ -36,11 +32,19 @@ public class DashboardFacade {
 
         List<PendenciaDTO> pendencias = montarPendencias();
 
+        // Lista de artigos aceitos com selos (usando Decorator)
+        List<String> artigosAceitosComSelos = todosArtigos.stream()
+            .filter(a -> a.getStatus().equals("ACEITO"))
+            .map(a -> FabricaExibicao.montarExibicao(a).exibir())
+            .toList();
+
         return new DashboardDTO(totalArtigos, totalRevisores, artigosAvaliados,
-                                 artigosPendentes, pendencias);
+                                 artigosPendentes, pendencias, artigosAceitosComSelos);
     }
 
-    /** Cruza cada artigo pendente com o revisor responsável (RF08 exige isso explicitamente). */
+    /**
+     * Cruza cada artigo pendente com o revisor responsável (RF08).
+     */
     private List<PendenciaDTO> montarPendencias() {
         List<PendenciaDTO> pendencias = new ArrayList<>();
 

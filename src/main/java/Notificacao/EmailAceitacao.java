@@ -18,6 +18,8 @@ public class EmailAceitacao extends EmailNotificacao {
     @Override
     protected String montarCorpo() {
         ArtigoExibivel exibicao = FabricaExibicao.montarExibicao(artigo);
+        String tituloComSelo = exibicao.exibir();
+        
         return String.format("""
             Prezado(a) Sr(a). %s:
 
@@ -32,7 +34,7 @@ public class EmailAceitacao extends EmailNotificacao {
             """,
             artigo.getAutorPrincipal().getEmail(),
             artigo.getId(),
-            exibicao.exibir(),
+            tituloComSelo,
             formatarPareceres()
         );
     }
