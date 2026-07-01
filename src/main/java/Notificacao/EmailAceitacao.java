@@ -1,5 +1,7 @@
 package Notificacao;
 
+import Decorator.ArtigoExibivel;
+import Decorator.FabricaExibicao;
 import StateArtigo.Artigo;
 
 public class EmailAceitacao extends EmailNotificacao {
@@ -15,6 +17,7 @@ public class EmailAceitacao extends EmailNotificacao {
 
     @Override
     protected String montarCorpo() {
+        ArtigoExibivel exibicao = FabricaExibicao.montarExibicao(artigo);
         return String.format("""
             Prezado(a) Sr(a). %s:
 
@@ -29,7 +32,7 @@ public class EmailAceitacao extends EmailNotificacao {
             """,
             artigo.getAutorPrincipal().getEmail(),
             artigo.getId(),
-            artigo.getTitulo(),
+            exibicao.exibir(),
             formatarPareceres()
         );
     }

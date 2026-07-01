@@ -51,7 +51,7 @@ O projeto utiliza **Maven** para gerenciamento de dependências (necessário par
 3. Compile e execute com Maven:
 
    ```bash
-   mvn compile exec:java
+   .\mvnw.cmd compile exec:java
    ```
 
    Alternativamente, gere um `.jar` executável com todas as dependências embutidas:
@@ -60,6 +60,11 @@ O projeto utiliza **Maven** para gerenciamento de dependências (necessário par
    mvn package
    java -jar target/ProjetoPadroes.jar
    ```
+   se as acentuações ficarem estranhas utilize esse codigo
+   
+   ```
+   $OutputEncoding = [Console]::OutputEncoding = [Text.Encoding]::UTF8
+   ```
 
 4. O sistema realiza o povoamento inicial automático lendo `usuarios.csv` (atendendo à exigência **E1**) e imprime no console todo o fluxo de orquestração simulado, cobrindo os 10 requisitos funcionais.
 
@@ -67,8 +72,13 @@ O projeto utiliza **Maven** para gerenciamento de dependências (necessário par
 
 ```
 ProjetoPadroes/
+├── ├── .mvn/
+│   └── wrapper/
+│       └── maven-wrapper.properties
+├── mvnw
+├── mvnw.cmd
 ├── pom.xml
-├── usuarios.csv              <- também copiado para src/main/resources/
+├── usuarios.csv              
 ├── src/main/java/
 │   ├── Main.java
 │   ├── Command/

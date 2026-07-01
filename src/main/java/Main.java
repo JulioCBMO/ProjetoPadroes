@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 import Command.Command;
 import Command.PainelControle;
 import Command.SistemaEvento;
@@ -9,18 +6,25 @@ import FacadeDashboard.DashboardFacade;
 import FactoryMethod.Chair;
 import FactoryMethod.Pesquisador;
 import FactoryMethod.Usuario;
-import Notificacao.EmailService;
-import Observer.LogAuditoria;
-import Observer.NotificadorEmail;
-import StateArtigo.Artigo;
-import StateConvite.ComiteTecnico;
-import StateConvite.Convite;
 import Strategy.CompatibilidadePonderada;
 import Strategy.DistribuidorDeArtigos;
-import TemplateMethod.RelatorioDetalhado;
-import TemplateMethod.RelatorioRevisaoTemplate;
-import TemplateMethod.RelatorioSimples;
+import StateConvite.ComiteTecnico;
+import StateConvite.Convite;
+
 import Util.DataLoaderCSV;
+
+import Notificacao.EmailService;
+import Observer.NotificadorEmail;
+import StateArtigo.Artigo;
+import Observer.LogAuditoria;
+
+import TemplateMethod.RelatorioRevisaoTemplate;
+import TemplateMethod.RelatorioDetalhado;
+import TemplateMethod.RelatorioSimples;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Orquestrador Principal do Sistema.
@@ -52,12 +56,19 @@ public class Main {
         // Carga automática de dados via CSV com Factory Method integrado nos bastidores
         List<Usuario> bancoDeUsuarios = DataLoaderCSV.carregarUsuarios("usuarios.csv");
         
+        Chair coordenador = null;
         List<Pesquisador> pesquisadores = new ArrayList<>();
         
         for (Usuario u : bancoDeUsuarios) {
-            if (!(u instanceof Chair)) {
+            if (u instanceof Chair) {
+                coordenador = (Chair) u;
+            } else if (u instanceof Pesquisador) {
                 pesquisadores.add((Pesquisador) u);
             }
+        }
+
+        if (coordenador != null) {
+            System.out.println("[Sistema] Chair responsável pelo evento: " + coordenador.getEmail());
         }
 
         System.out.println("\n==================================================");
@@ -125,9 +136,13 @@ public class Main {
         
         // Executa a estratégia ponderada com o nosso algoritmo de balanceamento de cotas
         DistribuidorDeArtigos distribuidor = new DistribuidorDeArtigos(new CompatibilidadePonderada());
-        distribuidor.distribuir(listaArtigos, comiteAtivo);
-        
-        System.out.println("[Distribuição] Alocação finalizada com sucesso pelo algoritmo.");
+        Map<Pesquisador, List<Artigo>> mapaDistribuicao = distribuidor.distribuir(listaArtigos, comiteAtivo);
+
+        mapaDistribuicao.forEach((revisor, artigos) ->
+            artigos.forEach(a ->
+                System.out.println("[Distribuição] \"" + a.getTitulo() + "\" → " + revisor.getEmail())
+            )
+        );
 
         System.out.println("\n==================================================");
         System.out.println("=== TRANSIÇÕES DE ESTADO INTERNAS (STATE) ===");
