@@ -1,301 +1,425 @@
 @startuml
-title Diagrama de Classes - Paper Submission Management System
-
-skinparam classAttributeIconSize 0
-skinparam shadowing false
+skinparam dpi 100
 skinparam linetype ortho
+left to right direction
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
 skinparam packageStyle rectangle
-hide empty members
 
-skinparam defaultFontSize 10
-skinparam classFontSize 12
-skinparam noteFontSize 10
 
-' =====================================================
-' PADRÃO COMMAND (RF01)
-' =====================================================
-package "Command (RF01)" {
-  interface Command {
-    + executar(): void
-  }
-  
-  class StartCommand {
-    - sistema: SistemaEvento
-    + executar(): void
-  }
-  
-  class SistemaEvento {
-    - nomeEvento: String
-    - abertoParaSubmissoes: boolean
-    + start(): void
-    + isAberto(): boolean
-  }
-  
-  class PainelControle {
-    - slot: Command
-    + setCommand(command: Command): void
-    + pressionarBotao(): void
-  }
+
+package "Command" {
+    class SistemaEvento {
+        - String nomeEvento
+        - boolean abertoParaSubmissoes
+        - LocalDate dataLimite
+        + start()
+        + isAberto()
+        + isDentroDoPrazo()
+        + setDataLimite(LocalDate)
+        + getDataLimite()
+    }
+    interface Command {
+        + executar()
+    }
+    class StartCommand {
+        - SistemaEvento sistema
+        + executar()
+    }
+    class PainelControle {
+        - Command slot
+        + setCommand(Command)
+        + pressionarBotao()
+    }
 }
 
-Command <|.. StartCommand
-StartCommand --> SistemaEvento : "receiver"
-PainelControle o-- Command : "invoca"
-
-note right of Command
-  **Padrão Command**
-  Desacopla o botão da UI (PainelControle) 
-  da lógica de reset do sistema (SistemaEvento).
-end note
-
-' =====================================================
-' PADRÃO FACTORY METHOD (RF02)
-' =====================================================
-package "FactoryMethod (RF02)" {
-  abstract class Usuario {
-    # email: String
-    # senha: String
-    # instituicao: String
-    + getTipo(): String
-  }
-  
-  class Pesquisador {
-    - isRevisor: boolean
-    + aceitarConviteRevisao()
-    + submeterArtigo()
-  }
-  
-  class Chair {
-  }
-  
-  interface UsuarioFactory {
-    + criar(email, senha, inst): Usuario
-  }
-  
-  class PesquisadorFactory {
-    + criar(): Usuario
-  }
-  
-  class ChairFactory {
-    + criar(): Usuario
-  }
-  
-  class UsuarioFactoryRegistry {
-    - factories: Map<String, UsuarioFactory>
-    + criar(tipo, email, senha, inst): Usuario
-  }
+' ==================== FACTORY METHOD ====================
+package "FactoryMethod" {
+    abstract class Usuario {
+        # String email
+        # String senha
+        # String instituicao
+        + getEmail()
+        + getInstituicao()
+        + abstract getTipo()
+    }
+    class Pesquisador {
+        - List<Artigo> artigosSubmetidos
+        - boolean isRevisor
+        - List<String> especialidades
+        - List<Artigo> artigosParaRevisar
+        + submeterArtigo(Artigo)
+        + aceitarConviteRevisao()
+        + isRevisor()
+        + adicionarEspecialidade(String)
+        + getEspecialidades()
+        + adicionarArtigoParaRevisar(Artigo)
+        + getArtigosParaRevisar()
+        + getTipo()
+    }
+    class Chair {
+        + getTipo()
+    }
+    interface UsuarioFactory {
+        + criar(String, String, String): Usuario
+    }
+    class PesquisadorFactory implements UsuarioFactory
+    class ChairFactory implements UsuarioFactory
+    class UsuarioFactoryRegistry {
+        + criar(String, String, String, String): Usuario
+    }
+    class AreaTematica {
+        - static Set<String> areasCadastradas
+        + static cadastrarArea(String)
+        + static areaExiste(String): boolean
+        + static getAreasCadastradas(): Set<String>
+        + static limparAreas()
+    }
 }
 
+' ==================== STATE ARTIGO ====================
+package "StateArtigo" {
+    class Artigo {
+        - int id
+        - String titulo
+        - String resumo
+        - Pesquisador autorPrincipal
+        - List<Pesquisador> coautores
+        - List<String> pareceres
+        - List<ArtigoObserver> observers
+        - List<String> temas
+        - Set<String> selos
+        - List<Pesquisador> revisoresDesignados
+        - Map<String, Veredito> vereditos
+        - EstadoArtigo estadoAtual
+        + submeter()
+        + distribuir()
+        + concluirRevisao(boolean)
+        + setEstado(EstadoArtigo)
+        + getStatus()
+        + isAutorOuCoautor(Pesquisador): boolean
+        + adicionarCoautor(Pesquisador)
+        + adicionarTema(String)
+        + getTemas()
+        + adicionarParecer(String)
+        + getPareceres()
+        + adicionarSelo(String)
+        + getSelos()
+        + anexarObserver(ArtigoObserver)
+        + removerObserver(ArtigoObserver)
+        + adicionarRevisorDesignado(Pesquisador)
+        + getRevisoresDesignados()
+        + adicionarVeredito(String, Veredito)
+        + getVereditos()
+        + todosRevisoresAvaliaram(): boolean
+    }
+    interface EstadoArtigo {
+        + submeter(Artigo)
+        + distribuir(Artigo)
+        + concluirRevisao(Artigo, boolean)
+        + getStatus()
+    }
+    class EstadoSubmetido implements EstadoArtigo
+    class EstadoEmRevisao implements EstadoArtigo
+    class EstadoAceito implements EstadoArtigo
+    class EstadoRejeitado implements EstadoArtigo
+}
+
+' ==================== STATE CONVITE ====================
+package "StateConvite" {
+    class ComiteTecnico {
+        - List<Convite> convites
+        + convidar(Pesquisador): Convite
+        + getRevisoresAtivos(): List<Pesquisador>
+    }
+    class Convite {
+        - Pesquisador pesquisador
+        - EstadoConvite estado
+        + aceitar(List<String>)
+        + recusar()
+        + setEstado(EstadoConvite)
+        + getPesquisador()
+        + getStatus()
+    }
+    interface EstadoConvite {
+        + aceitar(Convite, List<String>)
+        + recusar(Convite)
+        + getDescricao()
+    }
+    class ConvitePendente implements EstadoConvite
+    class ConviteAceito implements EstadoConvite
+    class ConviteRecusado implements EstadoConvite
+}
+
+' ==================== STRATEGY ====================
+package "Strategy" {
+    interface CompatibilidadeStrategy {
+        + calcular(Artigo, Pesquisador): double
+    }
+    class CompatibilidadeExata implements CompatibilidadeStrategy
+    class CompatibilidadePonderada implements CompatibilidadeStrategy
+    class DistribuidorDeArtigos {
+        - CompatibilidadeStrategy strategy
+        + DistribuidorDeArtigos(CompatibilidadeStrategy)
+        + setStrategy(CompatibilidadeStrategy)
+        + distribuir(List<Artigo>, List<Pesquisador>): Map<Pesquisador, List<Artigo>>
+        - escolherRevisor(Artigo, List<Pesquisador>): Pesquisador
+    }
+
+    interface EstrategiaConsolidacao {
+        + consolidar(List<Veredito>): Veredito
+    }
+    class ConsolidacaoHierarquica implements EstrategiaConsolidacao
+    class ConsolidacaoOtimista implements EstrategiaConsolidacao
+}
+
+' ==================== OBSERVER ====================
+package "Observer" {
+    interface ArtigoObserver {
+        + onEstadoAlterado(Artigo)
+    }
+    class NotificadorEmail implements ArtigoObserver {
+        - EmailService emailService
+        + onEstadoAlterado(Artigo)
+    }
+    class LogAuditoria implements ArtigoObserver {
+        + onEstadoAlterado(Artigo)
+    }
+}
+
+' ==================== TEMPLATE METHOD ====================
+package "TemplateMethod" {
+    abstract class RelatorioRevisaoTemplate {
+        + gerarRelatorio(Artigo)
+        - imprimirCabecalho()
+        # abstract imprimirCorpo(Artigo)
+        - imprimirRodape()
+    }
+    class RelatorioDetalhado extends RelatorioRevisaoTemplate {
+        # imprimirCorpo(Artigo)
+    }
+    class RelatorioSimples extends RelatorioRevisaoTemplate {
+        # imprimirCorpo(Artigo)
+    }
+}
+
+' ==================== FACADE DASHBOARD ====================
+package "FacadeDashboard" {
+    class DashboardFacade {
+        - List<Artigo> todosArtigos
+        - List<Pesquisador> todosPesquisadores
+        + gerarResumo(): DashboardDTO
+        - montarPendencias(): List<PendenciaDTO>
+    }
+    class DashboardDTO {
+        - int totalArtigos
+        - int totalRevisores
+        - int artigosAvaliados
+        - int artigosPendentes
+        - List<PendenciaDTO> pendencias
+        - List<String> artigosAceitosComSelos
+        + imprimir()
+    }
+    class PendenciaDTO {
+        + String artigoTitulo
+        + String revisorEmail
+    }
+}
+
+' ==================== DECORATOR ====================
+package "Decorator" {
+    interface ArtigoExibivel {
+        + exibir(): String
+    }
+    class ArtigoBase implements ArtigoExibivel {
+        - Artigo artigo
+        + exibir()
+    }
+    abstract class SeloDecorator implements ArtigoExibivel {
+        # ArtigoExibivel artigoDecorado
+        + exibir()
+    }
+    class SeloMelhorArtigo extends SeloDecorator {
+        + exibir()
+    }
+    class SeloMencaoHonrosa extends SeloDecorator {
+        + exibir()
+    }
+    class FabricaExibicao {
+        + static montarExibicao(Artigo): ArtigoExibivel
+    }
+}
+
+' ==================== NOTIFICAÇÃO ====================
+package "Notificacao" {
+    class EmailService {
+        - String remetente
+        - String senha
+        + enviar(String, String, String)
+    }
+    abstract class EmailNotificacao {
+        # Artigo artigo
+        # EmailService emailService
+        + enviar()
+        # abstract montarAssunto(): String
+        # abstract montarCorpo(): String
+        # formatarPareceres(): String
+    }
+    class EmailAceitacao extends EmailNotificacao {
+        + montarAssunto()
+        + montarCorpo()
+    }
+    class EmailRejeicao extends EmailNotificacao {
+        + montarAssunto()
+        + montarCorpo()
+    }
+}
+
+' ==================== UTIL ====================
+package "Util" {
+    enum Veredito {
+        REJEITADO(0, false)
+        FRACAMENTE_REJEITADO(1, false)
+        FRACAMENTE_ACEITO(2, true)
+        ACEITO(3, true)
+        + getPeso()
+        + isAprovado()
+        + fromString(String): Veredito
+        + toString()
+    }
+    class DataLoaderCSV {
+        + static carregarUsuarios(String): List<Usuario>
+    }
+}
+
+' ==================== MAIN ====================
+package "Main" {
+    class Main {
+        - static SistemaEvento evento
+        - static Chair coordenador
+        - static List<Pesquisador> pesquisadores
+        - static ComiteTecnico comite
+        - static List<Artigo> listaArtigos
+        - static EmailService emailService
+        - static boolean distribuido
+        - static int proximoIdArtigo
+        - static LocalDate dataLimiteEvento
+        - static EstrategiaConsolidacao estrategiaConsolidacao
+        + main(String[])
+        - static rf01InicializarEvento(Scanner)
+        - static rf02ListarUsuarios()
+        - static rf03CadastrarAreas(Scanner)
+        - static rf04ConvidarRevisor(Scanner)
+        - static rf05SubmeterArtigo(Scanner)
+        - static rf06DistribuirArtigos()
+        - static rf07ConcluirRevisao(Scanner)
+        - static rf08Dashboard()
+        - static rf09NotificarAutores()
+        - static rf10AplicarSelo(Scanner)
+        - static rf11EscolherEstrategia(Scanner)
+        - static carregarCSV()
+        - static exibirBoasVindas()
+        - static exibirMenu()
+        - static separador(String)
+        - static lerInt(Scanner): int
+    }
+}
+
+' ==================== RELACIONAMENTOS ====================
+
+' Command
+SistemaEvento --> StartCommand : instancia
+StartCommand ..|> Command
+PainelControle --> Command : usa
+
+' FactoryMethod
 Usuario <|-- Pesquisador
 Usuario <|-- Chair
 UsuarioFactory <|.. PesquisadorFactory
 UsuarioFactory <|.. ChairFactory
-UsuarioFactoryRegistry o-- UsuarioFactory : "usa"
+UsuarioFactoryRegistry ..> UsuarioFactory : usa
+PesquisadorFactory ..> Pesquisador : cria
+ChairFactory ..> Chair : cria
+AreaTematica --> Artigo : valida temas
 
-note right of UsuarioFactoryRegistry
-  **Padrão Factory Method**
-  Instancia os usuários a partir da leitura do CSV
-  sem usar if/else, aplicando o Open/Closed Principle.
-end note
+' State Artigo
+Artigo *--> EstadoArtigo : state
+EstadoSubmetido ..|> EstadoArtigo
+EstadoEmRevisao ..|> EstadoArtigo
+EstadoAceito ..|> EstadoArtigo
+EstadoRejeitado ..|> EstadoArtigo
+Artigo --> Pesquisador : autor
+Artigo --> Pesquisador : coautores
 
-' =====================================================
-' PADRÃO STRATEGY (RF03, RF06)
-' =====================================================
-package "Strategy (Distribuicao)" {
-  interface CompatibilidadeStrategy {
-    + calcular(artigo: Artigo, revisor: Pesquisador): double
-  }
-  
-  class CompatibilidadeExata
-  class CompatibilidadePonderada
-  
-  class DistribuidorDeArtigos {
-    - strategy: CompatibilidadeStrategy
-    + distribuir(artigos, pesquisadores)
-  }
-}
+' State Convite
+ComiteTecnico *--> Convite
+Convite *--> EstadoConvite
+ConvitePendente ..|> EstadoConvite
+ConviteAceito ..|> EstadoConvite
+ConviteRecusado ..|> EstadoConvite
+Convite --> Pesquisador
 
-CompatibilidadeStrategy <|.. CompatibilidadeExata
-CompatibilidadeStrategy <|.. CompatibilidadePonderada
-DistribuidorDeArtigos o-- CompatibilidadeStrategy : "delega calculo"
+' Strategy (Distribuição)
+DistribuidorDeArtigos --> CompatibilidadeStrategy : usa
+CompatibilidadeExata ..|> CompatibilidadeStrategy
+CompatibilidadePonderada ..|> CompatibilidadeStrategy
+DistribuidorDeArtigos ..> Artigo : distribui
+DistribuidorDeArtigos ..> Pesquisador : escolhe
 
-note bottom of DistribuidorDeArtigos
-  **Padrão Strategy**
-  O algoritmo de blind-review e balanceamento 
-  de cota pode variar livremente (Exata/Ponderada) 
-  sem mexer no Distribuidor principal.
-end note
+' Strategy (Consolidação)
+Main --> EstrategiaConsolidacao : usa
+ConsolidacaoHierarquica ..|> EstrategiaConsolidacao
+ConsolidacaoOtimista ..|> EstrategiaConsolidacao
+EstrategiaConsolidacao ..> Veredito : consolida
 
-' =====================================================
-' PADRÃO STATE - CONVITE (RF04)
-' =====================================================
-package "StateConvite (RF04)" {
-  interface EstadoConvite {
-    + aceitar(convite, especialidades)
-    + recusar(convite)
-    + getDescricao()
-  }
-  
-  class ConvitePendente
-  class ConviteAceito
-  class ConviteRecusado
-  
-  class Convite {
-    - estado: EstadoConvite
-    - pesquisador: Pesquisador
-  }
-  
-  class ComiteTecnico {
-    - convites: List<Convite>
-    + convidar(pesquisador)
-  }
-}
+' Observer
+Artigo o--> ArtigoObserver : notifica
+NotificadorEmail ..|> ArtigoObserver
+LogAuditoria ..|> ArtigoObserver
+NotificadorEmail --> EmailService
 
-EstadoConvite <|.. ConvitePendente
-EstadoConvite <|.. ConviteAceito
-EstadoConvite <|.. ConviteRecusado
-Convite o-- EstadoConvite
-ComiteTecnico --> Convite
-
-' =====================================================
-' PADRÃO STATE - ARTIGO (RF05) E OBSERVER (RF06/09)
-' =====================================================
-package "StateArtigo (RF05) e Observer" {
-  interface EstadoArtigo {
-    + submeter(artigo)
-    + distribuir(artigo)
-    + concluirRevisao(artigo, aprovado)
-  }
-  
-  class EstadoSubmetido
-  class EstadoEmRevisao
-  class EstadoAceito
-  class EstadoRejeitado
-  
-  class Artigo {
-    - estadoAtual: EstadoArtigo
-    - observers: List<ArtigoObserver>
-    + setEstado()
-    + anexarObserver()
-  }
-  
-  interface ArtigoObserver {
-    + onEstadoAlterado(artigo: Artigo)
-  }
-  
-  class NotificadorEmail
-  class LogAuditoria
-}
-
-EstadoArtigo <|.. EstadoSubmetido
-EstadoArtigo <|.. EstadoEmRevisao
-EstadoArtigo <|.. EstadoAceito
-EstadoArtigo <|.. EstadoRejeitado
-Artigo o-- EstadoArtigo
-
-ArtigoObserver <|.. NotificadorEmail
-ArtigoObserver <|.. LogAuditoria
-Artigo o-- ArtigoObserver : "notifica"
-
-note right of Artigo
-  **Padrões State e Observer**
-  O State impede transições ilegais do Artigo.
-  Ao mudar de estado, o Artigo notifica os 
-  Observers (desacoplando o envio de email).
-end note
-
-' =====================================================
-' PADRÃO TEMPLATE METHOD (RF07, RF09)
-' =====================================================
-package "TemplateMethod e Notificacao" {
-  abstract class RelatorioRevisaoTemplate {
-    + gerarRelatorio(artigo)
-    # imprimirCorpo(artigo)
-  }
-  class RelatorioSimples
-  class RelatorioDetalhado
-  
-  abstract class EmailNotificacao {
-    + enviar()
-    # montarAssunto()
-    # montarCorpo()
-  }
-  class EmailAceitacao
-  class EmailRejeicao
-  class EmailService {
-    + enviar(dest, ass, corpo)
-  }
-}
-
-RelatorioRevisaoTemplate <|-- RelatorioSimples
+' Template Method (Relatórios)
 RelatorioRevisaoTemplate <|-- RelatorioDetalhado
+RelatorioRevisaoTemplate <|-- RelatorioSimples
+RelatorioRevisaoTemplate ..> Artigo : gera
 
+' Facade
+DashboardFacade --> Artigo : consulta
+DashboardFacade --> Pesquisador : consulta
+DashboardFacade ..> DashboardDTO : cria
+DashboardDTO *--> PendenciaDTO
+
+' Decorator
+ArtigoBase ..|> ArtigoExibivel
+SeloDecorator ..|> ArtigoExibivel
+SeloMelhorArtigo --|> SeloDecorator
+SeloMencaoHonrosa --|> SeloDecorator
+FabricaExibicao ..> ArtigoExibivel : monta
+ArtigoExibivel ..> Artigo : exibe
+
+' Notificação (Template Method e Observer)
 EmailNotificacao <|-- EmailAceitacao
 EmailNotificacao <|-- EmailRejeicao
+EmailNotificacao --> Artigo
 EmailNotificacao --> EmailService
+NotificadorEmail ..> EmailNotificacao : cria
 
-note right of RelatorioRevisaoTemplate
-  **Padrão Template Method**
-  Esqueleto fixo para Relatórios e Emails.
-  O "corpo" varia conforme a subclasse.
-end note
+' Util
+DataLoaderCSV ..> UsuarioFactoryRegistry : usa
+DataLoaderCSV ..> Usuario : carrega
+Veredito --> Artigo : usado em vereditos
 
-' =====================================================
-' PADRÃO FACADE (RF08)
-' =====================================================
-package "FacadeDashboard (RF08)" {
-  class DashboardFacade {
-    + gerarResumo(): DashboardDTO
-  }
-  class DashboardDTO
-  class PendenciaDTO
-}
-
-DashboardFacade --> DashboardDTO
-DashboardDTO o-- PendenciaDTO
-
-note top of DashboardFacade
-  **Padrão Facade**
-  Simplifica a exibição de painéis,
-  cruzando listas e montando DTOs limpos.
-end note
-
-' =====================================================
-' PADRÃO DECORATOR (RF10)
-' =====================================================
-package "Decorator (RF10)" {
-  interface ArtigoExibivel {
-    + exibir(): String
-  }
-  
-  class ArtigoBase {
-    - artigo: Artigo
-  }
-  
-  abstract class SeloDecorator {
-    # artigoDecorado: ArtigoExibivel
-  }
-  
-  class SeloMelhorArtigo
-  class SeloMencaoHonrosa
-  
-  class FabricaExibicao {
-    + montarExibicao(artigo): ArtigoExibivel
-  }
-}
-
-ArtigoExibivel <|.. ArtigoBase
-ArtigoExibivel <|.. SeloDecorator
-SeloDecorator o-- ArtigoExibivel
-SeloDecorator <|-- SeloMelhorArtigo
-SeloDecorator <|-- SeloMencaoHonrosa
-FabricaExibicao --> ArtigoExibivel
-
-note right of SeloDecorator
-  **Padrão Decorator**
-  Permite acumular selos (tags) no 
-  artigo para exibição, sem alterar o 
-  código original da classe Artigo.
-end note
+' Main orquestra tudo
+Main --> SistemaEvento
+Main --> Chair
+Main --> Pesquisador
+Main --> ComiteTecnico
+Main --> Artigo
+Main --> EmailService
+Main --> DistribuidorDeArtigos
+Main --> EstrategiaConsolidacao
+Main --> DashboardFacade
+Main --> FabricaExibicao
+Main --> DataLoaderCSV
 
 @enduml
